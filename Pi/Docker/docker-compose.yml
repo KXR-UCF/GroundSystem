@@ -1,0 +1,64 @@
+version: "2.1"
+services:
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /home/pi/GroundSystem/Pi/Docker/Heimdall/config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - '8086:8086'
+    volumes:
+      - /home/pi/GroundSystem/Pi/Docker/InfluxDB/data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=db0
+      - INFLUXDB_ADMIN_USER='admin'
+      - INFLUXDB_ADMIN_PASSWORD='password'
+    restart: unless-stopped
+  chronograf:
+    image: chronograf:latest
+    ports:
+      - '127.0.0.1:8888:8888'
+    volumes:
+      - /home/pi/GroundSystem/Pi/Docker/Chronograf/data:/var/lib/chronograf
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_USERNAME='admin'
+      - INFLUXDB_PASSWORD='password'
+    restart: unless-stopped
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    volumes:
+      - /home/pi/GroundSystem/Pi/Docker/Grafana/data:/var/lib/grafana
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER='admin'
+      - GF_SECURITY_ADMIN_PASSWORD='password'
+    restart: unless-stopped
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /home/pi/GroundSystem/Pi/Docker/Portainer/data:/data
+    ports:
+      - 9000:9000
+  
