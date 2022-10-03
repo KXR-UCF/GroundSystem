@@ -11,13 +11,12 @@ services:
       - /home/pi/GroundSystem/Pi/Docker/Heimdall/config:/config
     ports:
       - 80:80
-      - 443:443
     restart: unless-stopped
   influxdb:
     image: influxdb:latest
     container_name: influxdb
     ports:
-      - '8086:8086'
+      - 8086:8086
     volumes:
       - /home/pi/GroundSystem/Pi/Docker/InfluxDB/data:/var/lib/influxdb
     restart: unless-stopped
@@ -25,7 +24,7 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - '3000:3000'
+      - 3000:3000
     volumes:
       - /home/pi/GroundSystem/Pi/Docker/Grafana/data:/var/lib/grafana
     restart: unless-stopped
@@ -38,7 +37,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /home/pi/GroundSystem/Pi/Docker/Pi/data:/data
+      - /home/pi/GroundSystem/Pi/Docker/Pi/Portainer/data:/data
     ports:
       - 9000:9000
   
